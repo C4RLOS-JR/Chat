@@ -8,6 +8,8 @@ server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server.bind((HOST, PORT))
 server.listen()
 
+salas = {}
+
 def  broadcast(sala, mensagem):
   for pessoa in salas[sala]:
     if isinstance(mensagem, str):
@@ -15,11 +17,13 @@ def  broadcast(sala, mensagem):
     pessoa.send(mensagem)
 
 def enviarMensagem(nome, sala, client):
-  mensagem = client.recv(1024).decode()
-  mensagem = f'{nome}: {mensagem}\n'
-  broadcast(sala, mensagem)
-
-salas = {}
+  while True:
+    try:
+      mensagem = client.recv(1024)
+      mensagem = f'{nome}: {mensagem.decode()}\n'
+      broadcast(sala, mensagem)
+    except:
+      pass
 
 while True:
   client, addr = server.accept()
